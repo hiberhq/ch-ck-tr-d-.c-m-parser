@@ -25,7 +25,8 @@ the parser will continue from the last state. Or will just start it initially if
 
 `$ python3 p.py -f`
 
-Will start to working from the ground erasing the previous parser state and all parsed data.
+will start to working from the ground erasing the previous parser state and all parsed data.
+
 Files `postcodes.conf` / `categories.conf` have postcodes/categories for current task. This is the thing you have to adjust before running.
 Values should be written in one line and separated by commas. If `postcodes.conf` / `categories.conf` doesn't exist `postcodes_all.conf` / `categories_all.conf` will be used insted.
 But `postcodes.conf` / `categories.conf` have priority.
