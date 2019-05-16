@@ -79,7 +79,9 @@ def nrmlzMoney(s):
 	return re.sub('[£ ]+', '', s)
 
 
-def decryptEmail(encodedString):
+def decryptEmail(encodedString, url):
+	if not encodedString:
+		return ''
 	r = int(encodedString[:2],16)
 	email = ''.join([chr(int(encodedString[i:i+2], 16) ^ r) for i in range(2, len(encodedString), 2)])
 	return email
@@ -346,7 +348,7 @@ def saveData(content, url, thread, color):
 	r['pageURL'] = url
 	r['contact'] = getNodeText(contact)
 	r['phones'] = phonesStr
-	r['email'] = decryptEmail(email) if email else decryptEmail(email2)
+	r['email'] = decryptEmail(email, url) if email else decryptEmail(email2, url)
 	r['website'] = website.get('href') if website else ''
 	r['score'] = getNodeText(score)
 	r['reliability'] = getFirstNodeText(reliability)
