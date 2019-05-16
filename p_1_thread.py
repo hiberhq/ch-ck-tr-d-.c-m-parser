@@ -3,7 +3,6 @@
 import os
 import shutil
 import requests
-import threading
 from requests.utils import requote_uri
 from bs4 import BeautifulSoup
 import random
@@ -189,50 +188,8 @@ def checkNextSearch():
 		state['page'] = state['page'] + 1
 		writeState(state)
 		getSearchResults()
-		
-	startThreads()
 
-
-def startThreads():
-	with open(URLS_PATH, 'r') as file:
-		lines = file.readlines()
-		linesCount = len(lines)
-	
-	global results, threads
-	results = []
-	threads = {}
-	os.system('clear')
-	
-	for i in range(linesCount):
-		url = requote_uri(lines[i]).rstrip('%0A')
-		thread = MultiThread(url, i)
-		thread.start()
-		threads[i] = thread
-	
-	while threads:
-		pass
-	
-	# when threads are completed
-	log('All threads are completed.', 'yellow')
-	res = ''
-	for i, item in enumerate(results):
-		if os.path.exists(RESULT):
-			res += ',' + json.dumps(item)
-		else:
-			sep = '[' if i == 0 else ','
-			res += sep + json.dumps(item)
-
-	try:
-		with open(RESULT, 'a') as file:
-			file.write(res)
-	except OSError as e:
-		log("Cannot write in file '%s'. %s" % (RESULT, e), 'red')
-		exit(-1)
-
-	# Remove ulrs file
-	os.remove(URLS_PATH)
-
-	checkNextSearch()
+	goTo(getURL())
 
 
 def query():
@@ -241,7 +198,7 @@ def query():
 
 def getContent(url):
 	try:
-		response = requests.get(url, headers=HEADERS).text
+		response = requests.get(url, headers=HEADERS).text # url, timeout=(10, 0.00001)
 	except requests.RequestException as e:
 		if e.response is not None:
 			log(e.response + ' %s' % url, 'red')
@@ -253,6 +210,7 @@ def getContent(url):
 
 
 def getSearchResults():
+#	print('getSearchResults')
 	content = getContent(query())
 	
 	if not content:
@@ -274,6 +232,7 @@ def getSearchResults():
 	state['catName'] = html.find('h1').text.split(' in ')[0]
 	
 	with open(URLS_PATH, 'w') as file:
+#		log('write in file %s' % URLS_PATH)
 		urls = ''
 		for i, link in enumerate(links):
 			urls += ('' if i == 0 else '\n') + BASE_URL + link.get('href')
@@ -298,25 +257,46 @@ def nextQuery():
 			with open(RESULT, 'a') as file:
 				file.write(']')
 			log('...DONE!', 'yellow')
-
+			
 			makeUnique()
-
+			
 			exit()
 
+			
+def getURL():
+	with open(URLS_PATH, 'r') as file:
+		urls = ''
+		for i, line in enumerate(file):
+			if i == 0:
+				url = line
+			else:
+				urls += line
+				
+	if not urls:
+		# urls var is empty, so
+		os.remove(URLS_PATH)
+	else:
+		with open(URLS_PATH, 'w') as file:
+			file.write(urls)
+	
+	return requote_uri(url).rstrip('%0A')
 
-def goTo(url, thread, color):
+
+def goTo(url):
 	content = getContent(url)
 
 	if not content:
 		# maybe try to refresh the same URL?
 		log('No response from server. Trying to get response again', 'red')
-		goTo(url, thread, color)
+		goTo(url)
 		return
 
-	return saveData(content, url, thread, color)
+	saveData(content, url)
+	checkNextSearch()
 
 	
-def saveData(content, url, thread, color):
+def saveData(content, url):
+#	os.system('clear')
 	html = BeautifulSoup(content, 'html.parser')
 	r = {}
 	
@@ -362,7 +342,7 @@ def saveData(content, url, thread, color):
 	
 	global count
 	count += 1
-	log('%s.  %s  postcode %s of %s  category %s of %s  page %s' % (count, thread, state['postcode'], totalPosts, state['cat'], totalCats, state['page']), color)
+	log('%s.  postcode %s of %s  category %s of %s  page %s' % (count, state['postcode'], totalPosts, state['cat'], totalCats, state['page']), 'cyan')
 	
 	##
 	# getData2
@@ -371,7 +351,6 @@ def saveData(content, url, thread, color):
 
 	if not content2:
 		log('No response from page %s' % url + 'Checks.aspx', 'red')
-		content2 = getContent(url + 'Checks.aspx')
 		
 	html2 = BeautifulSoup(content2, 'html.parser')
 	
@@ -395,33 +374,26 @@ def saveData(content, url, thread, color):
 	r['insuredBy'] = getFirstNodeText(insuredBy)
 	r['insuranceAmount'] = nrmlzMoney(getFirstNodeText(insuranceAmount))
 	
+	
 	##
-	# return the data
-	##
-	return r
-
-
-class MultiThread(threading.Thread):
-	def __init__(self, url, i):
-		threading.Thread.__init__(self)
-		self.i = i
-		self.url = url
-		self.lock = threading.Lock() # it seems like it works w/o lock, but for sure
-		self.setName('Thread #%s' % (self.i + 1))
-		self.color = random.choice(['magenta', 'cyan', 'yellow', 'green', 'blue'])
+	# write the Data
+	##	
+	if os.path.exists(RESULT):
+		result = ',' + json.dumps(r)
+	else:
+		result = '[' + json.dumps(r)
+	
+	try:
+		with open(RESULT, 'a') as file:
+			file.write(result)
+	except OSErroror as e:
+		log("Cannot write in file '%s'. %s" % (RESULT, e), 'red')
+		exit(-1)
 		
-	def run(self):
-		global results, threads
-		
-		res = goTo(self.url, self.getName(), self.color)
-		with self.lock:
-			results.append(res)
-			del threads[self.i]
-		log('%s is finished.' % self.getName(), 'white')
 
 if __name__ == '__main__':
 	if not os.path.exists(URLS_PATH):
 		log('No %s file, so go to search' % URLS_PATH, 'magenta')
 		getSearchResults()
 
-	startThreads()
+	goTo(getURL())

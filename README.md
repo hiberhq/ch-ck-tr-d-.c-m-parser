@@ -11,7 +11,7 @@ To check if it is installed:
 
 Otherwise install them. The way depends on platform.
 
-# Install parser dependecies
+# Install dependecies
 `$ pip3 install requests`
 
 `$ pip3 install bs4`
@@ -33,10 +33,7 @@ But `postcodes.conf` / `categories.conf` have priority.
 
 # Result
 The data will be written to `data.json` and represents array of objects. Note that data will have a lot of duplicates regardless of the script. So they must be cleaned the way depends on how the data will be used.
+![Done](screenshot.png?raw=true)
 
 # Advanced
 The `temp/state.json` stores the current parser state and has `page` (for search results page) `postcode` and `cat` (indexes of current postcode/category in current array of postcodes/categories). So they can be scpecified manually before the parser is launched to start from some position.
-
-# TODO
-- Multithreading
-- Performance enhancement
