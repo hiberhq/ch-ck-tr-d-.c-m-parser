@@ -33,6 +33,7 @@ But `postcodes.conf` / `categories.conf` have priority.
 
 # Result
 The data will be written to `data.json` and represents array of objects. Note that data will have a lot of duplicates regardless of the script. So they must be cleaned the way depends on how the data will be used.
+
 ![Done](screenshot.png?raw=true)
 
 # Advanced

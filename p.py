@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import sys
 import os
 import shutil
 import requests
@@ -11,6 +12,7 @@ import json
 import re
 import argparse
 
+sys.setrecursionlimit(100000)
 
 BASE_URL = 'https://www.che' + 'ck' + 'atr' + 'ad' + 'e.com'
 PATH = 'temp'
@@ -218,6 +220,10 @@ def startThreads():
 	log('All threads are completed.', 'yellow')
 	res = ''
 	for i, item in enumerate(results):
+		# Avoid potenrially bad values
+		if not item:
+			continue
+		
 		if os.path.exists(RESULT):
 			res += ',' + json.dumps(item)
 		else:
