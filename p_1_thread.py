@@ -90,6 +90,10 @@ def makeUnique():
 	with open(RESULT, 'r') as file:
 		data = json.loads(file.read())
 	for item in data:
+		# Avoid bad values
+		if not item:
+			continue
+			
 		if len(unique):
 			for i, u in enumerate(unique):
 				if item['name'] == u['name'] and item['email'] == u['email']:
@@ -250,6 +254,7 @@ def nextQuery():
 	else:
 		if len(categories) > state['cat'] + 1:
 			state['cat'] = state['cat'] + 1
+			state['postcode'] = 0
 			log('Next query. postcode: %s page: %s cat: %s' % (state['postcode'], state['page'], state['cat']), 'green')
 			writeState(state)
 			getSearchResults()
