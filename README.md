@@ -31,7 +31,8 @@ Files `postcodes.conf` / `categories.conf` have postcodes/categories for current
 Values should be written in one line and separated by commas. If `postcodes.conf` / `categories.conf` doesn't exist `postcodes_all.conf` / `categories_all.conf` will be used insted.
 But `postcodes.conf` / `categories.conf` have priority.
 
-To convert final data to sql format:
+To convert the final data to sql format:
+
 `$ python3 json_to_sql.py`
 
 # Result
