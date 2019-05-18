@@ -35,6 +35,15 @@ To convert the final data to sql format:
 
 `$ python3 json_to_sql.py`
 
+## Hint
+Run script in background:
+
+`nohup python3 p.py &`
+
+Check python processes:
+
+`ps ax | grep p.py`
+
 # Result
 The data will be written to `data.json` and represents array of objects. Note that data will have a lot of duplicates regardless of the script. So they must be cleaned the way depends on how the data will be used.
 
