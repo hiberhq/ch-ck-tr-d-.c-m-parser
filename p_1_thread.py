@@ -90,9 +90,6 @@ def makeUnique():
 	with open(RESULT, 'r') as file:
 		data = json.loads(file.read())
 	for item in data:
-		# Avoid bad values
-		if not item:
-			continue
 			
 		if len(unique):
 			for i, u in enumerate(unique):

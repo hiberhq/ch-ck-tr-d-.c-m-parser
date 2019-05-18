@@ -1,5 +1,7 @@
 temp/**
 data.json
+_data.json
 original_data.json
 data.sql
+_data.sql
 nohup.out

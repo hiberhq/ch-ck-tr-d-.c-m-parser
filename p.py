@@ -95,9 +95,6 @@ def makeUnique():
 	with open(RESULT, 'r') as file:
 		data = json.loads(file.read())
 	for item in data:
-		# Avoid bad values
-		if not item:
-			continue
 		
 		if len(unique):
 			for i, u in enumerate(unique):
@@ -109,7 +106,7 @@ def makeUnique():
 		else:
 			unique.append(item)
 
-	log('...DONE! %s duplicates were removed.' % (len(data) - len(unique)), 'yellow')
+	log('...DONE! %s duplicates were removed. %s companies are unique.' % (len(data) - len(unique), len(unique)), 'yellow')
 
 	with open(RESULT, 'w') as file:
 		file.write(json.dumps(unique))

@@ -85,7 +85,7 @@ try:
 			sep = '' if n == len(item) - 1 else ', '
 			out += '\'' + value.replace("'", "\\'") + '\'' + sep
 			n += 1
-		out += ');' if i == len(data) - 2 else ')'
+		out += ');' if i == len(data) - 1 else ')'
 			
 		i += 1
 
