@@ -245,12 +245,12 @@ def startThreads():
 
 
 def query():
-	return BASE_URL + '/Search/?postcode=%s&location=%s&page=%s&facet_Category=%s' % (postcodes[state['postcode']], postcodes[state['postcode']], state['page'], categories[state['cat']])
+	return BASE_URL + '/Search/?postcode=%s&location=%s&page=%s&facet_Category=%s&secondary=true' % (postcodes[state['postcode']], postcodes[state['postcode']], state['page'], categories[state['cat']])
 
 
 def getContent(url):
 	try:
-		response = requests.get(url, headers=HEADERS).text
+		response = requests.get(url, headers=HEADERS, timeout=180).text
 	except requests.RequestException as e:
 		if e.response is not None:
 			log(e.response + ' %s' % url, 'red')
